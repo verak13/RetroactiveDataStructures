@@ -1,5 +1,6 @@
-from partially_retroactive_queue import PartiallyRetroactiveQueue
-from partially_retroactive_priority_queue import PartiallyRetroactivePriorityQueue
+from simple_retroactive_data_structures.partially_retroactive_queue import PartiallyRetroactiveQueue
+from simple_retroactive_data_structures.partially_retroactive_stack import PartiallyRetroactiveStack
+from partially_retroactive_priority_queue.partially_retroactive_priority_queue import PartiallyRetroactivePriorityQueue
 
 if __name__ == '__main__':
 
@@ -29,22 +30,46 @@ if __name__ == '__main__':
 
     print("------------------------------------------------------------------------------")
 
+    print("PARTIALLY RETROACTIVE STACK:")
+    prs = PartiallyRetroactiveStack()
+    prs.insert_push(2, 10)
+    print(prs)
+    prs.insert_push(4, 20)
+    print(prs)
+    prs.insert_push(6, 30)
+    print(prs)
+    prs.insert_pop(28)
+    print(prs)
+    prs.insert_push(8, 15)
+    print(prs)
+    prs.insert_pop(16)
+    print(prs)
+    prs.delete_operation(30)
+    print(prs)
+    prs.delete_operation(28)
+    print(prs)
+    pop_operation = prs.insert_pop()
+    print("Popped value: " + str(pop_operation.node))
+    print(prs)
+
+    print("------------------------------------------------------------------------------")
+
     print("PARTIALLY RETROACTIVE PRIORITY QUEUE:")
     prpq = PartiallyRetroactivePriorityQueue()
 
-    prpq.add_insert(10, 2)
+    prpq.add_insert(10, 2, "2")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
-    prpq.add_insert(20, 6)
+    prpq.add_insert(20, 6, "6")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
-    prpq.add_insert(30, 4)
+    prpq.add_insert(30, 4, "4")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
-    prpq.add_insert(40, 10)
+    prpq.add_insert(40, 10, "10")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
@@ -56,11 +81,11 @@ if __name__ == '__main__':
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
-    prpq.add_insert(15, 1)
+    prpq.add_insert(15, 1, "1")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
-    prpq.add_insert(16, -1)
+    prpq.add_insert(16, -1, "-1")
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
@@ -72,6 +97,7 @@ if __name__ == '__main__':
     print("Min value: " + str(prpq.get_min()))
     print(prpq)
 
+    print("LENGTH: " + str(len(prpq)))
     print("NOW")
     print(prpq._queue_now)
     print("INSERTS")

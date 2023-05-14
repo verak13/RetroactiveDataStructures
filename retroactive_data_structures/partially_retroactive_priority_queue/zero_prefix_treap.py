@@ -1,4 +1,5 @@
-from treap import Treap
+from retroactive_data_structures.partially_retroactive_priority_queue.treap import Treap
+
 
 class MinPrefixSumAggregator:
     """

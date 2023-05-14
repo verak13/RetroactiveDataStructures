@@ -1,5 +1,6 @@
-from treap import Treap
-from zero_prefix_treap import ZeroPrefixTreap
+from retroactive_data_structures.partially_retroactive_priority_queue.treap import Treap
+from retroactive_data_structures.partially_retroactive_priority_queue.zero_prefix_treap import ZeroPrefixTreap
+
 
 class PartiallyRetroactivePriorityQueue():
     """
@@ -24,10 +25,10 @@ class PartiallyRetroactivePriorityQueue():
         """
 
         bridge = self._bridges.zero_prefix_before(time)
-        insert_value, insert_time = self._deleted_inserts.aggregate_after(
+        insert_value, insert_time, insert_data = self._deleted_inserts.aggregate_after(
             bridge, include_eq=True
         )
-        return insert_time, insert_value
+        return insert_time, insert_value, insert_data
 
     def _min_for_time(self, time):
 
@@ -36,23 +37,25 @@ class PartiallyRetroactivePriorityQueue():
         """
 
         bridge = self._bridges.zero_prefix_after(time)
-        min_value, min_time = self._inserts.aggregate_before(
+        if bridge is None:
+            raise ValueError
+        min_value, min_time, min_data = self._inserts.aggregate_before(
             bridge, include_eq=True
         )
-        return min_time, min_value
+        return min_time, min_value, min_data
 
-    def _promote_to_queue(self, time, value):
+    def _promote_to_queue(self, time, value, data):
 
         """
         Promotes an element with the given value and time to the current priority queue and updates the supporting data structures accordingly.
         """
 
-        self._queue_now.insert(value)
-        self._inserts[time] = (value, time)
+        self._queue_now.insert(value, data)
+        self._inserts[time] = (value, time, data)
         self._deleted_inserts.delete(time)
         self._bridges[time] = 0
 
-    def _delete_from_queue(self, time, value):
+    def _delete_from_queue(self, time, value, data):
 
         """
         Deletes an element with the given value and time from the current priority queue and updates the supporting data structures accordingly.
@@ -60,7 +63,7 @@ class PartiallyRetroactivePriorityQueue():
 
         self._queue_now.delete(value)
         self._inserts.delete(time)
-        self._deleted_inserts[time] = (value, time)
+        self._deleted_inserts[time] = (value, time, data)
         self._bridges[time] = 1
 
     def _remove_delete_min(self, time):
@@ -69,9 +72,9 @@ class PartiallyRetroactivePriorityQueue():
         Removes the earliest delete-min operation that happened at or after the given time, and promotes the corresponding inserted element to the current priority queue if any.
         """
 
-        insert_time, insert_value = self._insert_for_time(time)
+        insert_time, insert_value, insert_data = self._insert_for_time(time)
         self._bridges.delete(time)
-        self._promote_to_queue(insert_time, insert_value)
+        self._promote_to_queue(insert_time, insert_value, insert_data)
 
     def _remove_insert_in_queue(self, time):
 
@@ -90,12 +93,12 @@ class PartiallyRetroactivePriorityQueue():
         Removes the deleted insertion operation with the given time from the partially retroactive priority queue, and promotes the corresponding inserted element to the current priority queue if any.
         """
 
-        delete_time, delete_value = self._min_for_time(time)
-        self._delete_from_queue(delete_time, delete_value)
+        delete_time, delete_value, delete_data = self._min_for_time(time)
+        self._delete_from_queue(delete_time, delete_value, delete_data)
         self._deleted_inserts.delete(time)
         self._bridges.delete(time)
 
-    def add_insert(self, time, value):
+    def add_insert(self, time, value, data):
 
         """
         Adds an insertion operation with the given value and time to the partially retroactive priority queue.
@@ -110,10 +113,10 @@ class PartiallyRetroactivePriorityQueue():
 
         if time in self._bridges:
             raise KeyError
-        self._deleted_inserts[time] = (value, time)
+        self._deleted_inserts[time] = (value, time, data)
         self._bridges[time] = 1
-        insert_time, insert_value = self._insert_for_time(time)
-        self._promote_to_queue(insert_time, insert_value)
+        insert_time, insert_value, insert_data = self._insert_for_time(time)
+        self._promote_to_queue(insert_time, insert_value, insert_data)
 
     def add_delete_min(self, time):
 
@@ -129,9 +132,9 @@ class PartiallyRetroactivePriorityQueue():
         """
         if time in self._bridges:
             raise KeyError
-        delete_time, delete_value = self._min_for_time(time)
+        delete_time, delete_value, delete_data = self._min_for_time(time)
         self._bridges[time] = -1
-        self._delete_from_queue(delete_time, delete_value)
+        self._delete_from_queue(delete_time, delete_value, delete_data)
 
     def remove(self, time):
 
@@ -162,7 +165,7 @@ class PartiallyRetroactivePriorityQueue():
         """
 
         try:
-            return self.__iter__().__next__()[0]
+            return self.__iter__().__next__()
         except StopIteration:
             return None
 

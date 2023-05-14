@@ -4,7 +4,7 @@ Postoje dva tipa retroaktivnosti:
 - *partial retroactivity* - moguće je dodavati, uklanjati ili modifikovati podatke u prošlosti, ali čitati samo u sadašnjosti
 - *full retroactivity* - pored modifikacija, moguće je i izvršavati upite nad podacima u prošlosti
 
-Implementirane su dvije *partially retroactive* strukture podataka:
+Implementirane su tri *partially retroactive* strukture podataka:
 
 ### 1. Partially Retroactive Queue
 
@@ -52,7 +52,49 @@ First value: 2
 Queue = [4, 6] (First=4, Last=6)
 ```
 
-### 2. Partially Retroactive Priority Queue
+### 2. Partially Retroactive Stack
+
+Sadrži listu uvezanih čvorova (*doubly linked list*), pri čemu se čuvaju i podaci o izvršenim operacijama i trenutku u kojem su izvršene. Dodavanje operacija se izvršava u vremenu O(log(n)), jer je potrebno izvršiti binarnu pretragu nad listom operacija da bi se našlo odgovarajuće mjesto za novu operaciju.
+
+Podržane su sljedeće operacije:
+- `insert_push(value, time)` - dodavanje operacije push u određenom trenutku. Ako se ne proslijedi time, podrazmijeva se sadašnji trenutak.
+- `insert_pop(time)` - dodavanje operacije pop u određenom trenutku. Ako se ne proslijedi time, podrazmijeva se sadašnji trenutak. Vraća element koji je posljednji dodat.
+- `delete_operation(time)` - uklanjanje operacije izvršene u određenom trenutku.
+- `get_top()` - vraća posljednji dodat element.
+
+```python
+> prs = PartiallyRetroactiveStack()
+
+> prs.insert_push(value=2, time=10)
+Stack = [2] (Top=2)
+
+> prs.insert_push(value=4, time=20)
+Stack = [4, 2] (Top=4)
+
+> prs.insert_push(value=6, time=30)
+Stack = [6, 4, 2] (Top=6)
+
+> prs.insert_pop(time=28)
+Stack = [6, 2] (Top=6)
+
+> prs.insert_push(value=8, time=15)
+Stack = [6, 8, 2] (Top=6)
+
+> prs.insert_pop(time=16)
+Stack = [6, 2] (Top=6)
+
+> prs.delete_operation(time=30)
+Stack = [2] (Top=2)
+
+> prs.delete_operation(time=28)
+Stack = [4, 2] (Top=4)
+
+> pop_operation = prs.insert_pop()
+Popped value: 4
+Stack = [2] (Top=2)
+```
+
+### 3. Partially Retroactive Priority Queue
 
 Implementacija se oslanja na *Treap* strukturu podataka (*tree* + *heap*), koja omogućava izvršavanje operacija u vremenu O(log(n)) i pomoću koje su predstavljene sljedeće liste koje su potrebne za implementaciju:
 - `queue_now` - svi čvorovi koji se trenutno nalaze u redu sa prioritetom
@@ -61,7 +103,7 @@ Implementacija se oslanja na *Treap* strukturu podataka (*tree* + *heap*), koja 
 - `bridges` - trenuci u kojima je tadašnji `queue_now` bio podskup sadašnjeg `queue_now`
 
 Podržane su sljedeće operacije:
-- `add_insert(time, value)` - dodavanje operacije insert u određenom trenutku.
+- `add_insert(time, value, data)` - dodavanje operacije insert u određenom trenutku.
 - `add_delete_min(time)` - dodavanje operacije brisanja minimalnog (prvog) elementa u određenom trenutku.
 - `remove(time)` - uklanjanje operacije izvršene u određenom trenutku.
 - `get_min()` - vraća minimalni (prvi) element u sadašnjem trenutku.
@@ -69,44 +111,44 @@ Podržane su sljedeće operacije:
 ```python
 > prpq = PartiallyRetroactivePriorityQueue()
 
-> prpq.add_insert(10, 2)
-Min value: 2
+> prpq.add_insert(10, 2, '2')
+Min value: (2, '2')
 PriorityQueue = [2]
 
-> prpq.add_insert(20, 6)
-Min value: 2
+> prpq.add_insert(20, 6, '6')
+Min value: (2, '2')
 PriorityQueue = [2, 6]
 
-> prpq.add_insert(30, 4)
-Min value: 2
+> prpq.add_insert(30, 4, '4')
+Min value: (2, '2')
 PriorityQueue = [2, 4, 6]
 
-> prpq.add_insert(40, 10)
-Min value: 2
+> prpq.add_insert(40, 10, '10')
+Min value: (2, '2')
 PriorityQueue = [2, 4, 6, 10]
 
 > prpq.add_delete_min(29)
-Min value: 4
+Min value: (4, '4')
 PriorityQueue = [4, 6, 10]
 
 > prpq.add_delete_min(28)
-Min value: 4
+Min value: (4, '4')
 PriorityQueue = [4, 10]
 
-> prpq.add_insert(15, 1)
-Min value: 4
+> prpq.add_insert(15, 1, '1')
+Min value: (4, '4')
 PriorityQueue = [4, 6, 10]
 
-> prpq.add_insert(16, -1)
-Min value: 2
+> prpq.add_insert(16, -1, '-1')
+Min value: (2, '2')
 PriorityQueue = [2, 4, 6, 10]
 
 > prpq.remove(28)
-Min value: 1
+Min value: (1, '1')
 PriorityQueue = [1, 2, 4, 6, 10]
 
 > prpq.remove(30)
-Min value: 1
+Min value: (1, '1')
 PriorityQueue = [1, 2, 6, 10]
 
 NOW
@@ -150,6 +192,26 @@ BRIDGES
 |  |  |  |  |- None
 |  |  |- None
 |  |- None
+```
+
+### Primjena
+U fajlu *dijkstra.py* dat je primjer primjene parcijalno retroaktivnog reda sa prioritetom u *dijkstra* algoritmu za traženje najkraćih rastojanja od određeng čvora u grafu.
+
+```python
+    > prpq = PartiallyRetroactivePriorityQueue()
+
+    > example_graph = {
+        'E': {'F': 20, 'D': 50, 'A': 10},
+        'F': {'E': 20, 'A': 20, 'D': 30},
+        'D': {'F': 30, 'E': 50, 'A': 30, 'B': 10, 'C': 50},
+        'A': {'E': 10, 'F': 20, 'D': 30, 'B': 10},
+        'B': {'A': 10, 'D': 10, 'C': 10},
+        'C': {'D': 50, 'B': 10},
+    }
+
+    > distances = calculate_distances_prpq(prpq, example_graph, 'A')
+    > print(distances)
+    {'E': 10, 'F': 20, 'D': 20, 'A': 0, 'B': 10, 'C': 20}
 ```
 
 ### Literatura

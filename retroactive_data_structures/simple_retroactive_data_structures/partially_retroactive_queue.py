@@ -1,33 +1,24 @@
-class Node():
+from retroactive_data_structures.simple_retroactive_data_structures.base import BaseNode, BaseOperation, \
+    BasePartiallyRetroactive
+
+
+class Node(BaseNode):
     def __init__(self, prev, next, value=None):
-        self.value = value
-        self.prev = prev
-        self.next = next
+        super().__init__(prev, next, value)
         self.is_before_first = False
 
-    def __str__(self):
-        return str(self.value)
 
-
-class Operation():
+class Operation(BaseOperation):
     def __init__(self, time, node, is_enqueue):
-        self.time = time
-        self.node = node
+        super().__init__(time, node)
         self.is_enqueue = is_enqueue
 
-    def __eq__(self, other):
-        if isinstance(other, int):
-            return self.time == other
-        elif isinstance(other, Operation):
-            return self.time == other.time
-        return NotImplemented
 
-
-class PartiallyRetroactiveQueue():
+class PartiallyRetroactiveQueue(BasePartiallyRetroactive):
     def __init__(self):
+        super().__init__()
         self.first = None
         self.last = None
-        self.operations = []
 
     def is_initialized(self):
         if self.first is None and self.last is None:
@@ -40,90 +31,13 @@ class PartiallyRetroactiveQueue():
     def get_last(self):
         return None if self.last is None else self.last.value
 
-    def get_max_time(self):
-
-        """
-        Find maximum time value. When no time is passed to enqueue or dequeue operation, this value will be incremented by 10.
-        """
-
-        return max(self.operations, key=lambda x: x.time).time
-
-    def _find_operation(self, time):
-
-        """
-        Find the Operation object with the given time value. If no such object exists, return None.
-        """
-
-        operations_at_time = filter(lambda x: x.time == time, self.operations)
-        list_operations_at_time = list(operations_at_time)
-        if len(list_operations_at_time) == 0:
-            return None
-        return list_operations_at_time[0]
-
-    def _find_operation_binary_search(self, time):
-
-        """
-        Find the Operation object with the given time value using binary search.
-        If no such object exists, return None.
-        Note that this implementation assumes that self.operations is already sorted in descending order by time.
-        """
-
-        if not self.operations:
-            return None
-        left = 0
-        right = len(self.operations) - 1
-        while left <= right:
-            mid = (left + right) // 2
-            if time == self.operations[mid].time:
-                return self.operations[mid]
-            elif time > self.operations[mid].time:
-                right = mid - 1
-            else:
-                left = mid + 1
-        return None
-
-    def _find_operation_after(self, time):
-
-        """
-        Filter the list to only keep Operation objects whose time value is greater than passed time value.
-        Find the minimum object from the filtered list based on its time value. Otherwise, None is returned.
-        """
-
-        operations_after = filter(lambda x: x.time > time, self.operations)
-        list_operations_after = list(operations_after)
-        if len(list_operations_after) == 0:
-            return None
-        min_operation_after = min(list_operations_after, key=lambda x: x.time)
-        return min_operation_after
-
-    def _find_operation_after_binary_search(self, time):
-
-        """
-        Find the smallest time value of Operation object that is larger than the passed time value using binary search.
-        Otherwise, None is returned. Note that this implementation assumes that self.operations is already sorted in descending order by time.
-        """
-
-        if not self.operations or self.operations[0].time <= time:
-            return None
-        left = 0
-        right = len(self.operations) - 1
-        while left <= right:
-            mid = (left + right) // 2
-            if time < self.operations[mid].time:
-                if mid == 0 or time >= self.operations[mid + 1].time:
-                    return self.operations[mid]
-                else:
-                    left = mid + 1
-            else:
-                right = mid - 1
-        return None
-
     def insert_enqueue(self, value, time=None):
 
         """
         Insert enqueue operation at specific time. If time value already exists raise ValueError.
         Find operation after passed time value and add enqueue operation before it. If there is no operation after passed time value, add enqueue operation at the end.
         """
+
         if time is None:
             time = self.get_max_time() + 10
 
@@ -148,7 +62,7 @@ class PartiallyRetroactiveQueue():
         else:
             node_after = operation_after.node
             node = Node(node_after.prev, node_after, value)
-            if node_after.prev != None:
+            if node_after.prev is not None:
                 node_after.prev.next = node
             node_after.prev = node
             if node_after.is_before_first:
@@ -189,7 +103,7 @@ class PartiallyRetroactiveQueue():
     def delete_operation(self, time):
 
         """
-        Insert operation at specific time. If time value does not exists raise ValueError.
+        Delete operation at specific time. If time value does not exists raise ValueError.
         If operation type is enqueue, remove enqueued node.
         if operation type is dequeue, put back dequeued node.
         """
@@ -226,3 +140,29 @@ class PartiallyRetroactiveQueue():
     def __str__(self):
         queue = ", ".join(str(val) for val in self)
         return f"Queue = [{queue}]\t\t(First={self.get_first()}, Last={self.get_last()})"
+
+
+if __name__ == '__main__':
+    print("PARTIALLY RETROACTIVE QUEUE:")
+    prq = PartiallyRetroactiveQueue()
+    prq.insert_enqueue(value=2, time=10)
+    print(prq)
+    prq.insert_enqueue(value=4, time=20)
+    print(prq)
+    prq.insert_enqueue(value=6, time=30)
+    print(prq)
+    prq.insert_enqueue(value=10)
+    print(prq)
+    prq.insert_dequeue(time=28)
+    print(prq)
+    prq.insert_enqueue(value=8, time=15)
+    print(prq)
+    prq.insert_dequeue(time=16)
+    print(prq)
+    prq.delete_operation(time=40)
+    print(prq)
+    prq.delete_operation(time=28)
+    print(prq)
+    dequeue_operation = prq.insert_dequeue()
+    print("First value: " + str(dequeue_operation.node))
+    print(prq)

@@ -1,5 +1,7 @@
 import random
+
 random.seed(1)
+
 
 class TreapNode:
     def __init__(self, key, value, aggregate_func):
