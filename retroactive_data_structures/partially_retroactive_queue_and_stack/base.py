@@ -7,6 +7,11 @@ class BaseNode():
     def __str__(self):
         return str(self.value)
 
+    def __repr__(self):
+        prev = self.prev.value if self.prev is not None else None
+        next = self.next.value if self.next is not None else None
+        return str(self.value) + " " + str(prev) + "-" + str(next)
+
 
 class BaseOperation():
     def __init__(self, time, node):

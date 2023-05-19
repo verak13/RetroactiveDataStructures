@@ -1,4 +1,4 @@
-from retroactive_data_structures.simple_retroactive_data_structures.base import BaseNode, BaseOperation, \
+from retroactive_data_structures.partially_retroactive_queue_and_stack.base import BaseNode, BaseOperation, \
     BasePartiallyRetroactive
 
 

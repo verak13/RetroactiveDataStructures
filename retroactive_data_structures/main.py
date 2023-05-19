@@ -1,5 +1,5 @@
-from simple_retroactive_data_structures.partially_retroactive_queue import PartiallyRetroactiveQueue
-from simple_retroactive_data_structures.partially_retroactive_stack import PartiallyRetroactiveStack
+from partially_retroactive_queue_and_stack.partially_retroactive_queue import PartiallyRetroactiveQueue
+from partially_retroactive_queue_and_stack.partially_retroactive_stack import PartiallyRetroactiveStack
 from partially_retroactive_priority_queue.partially_retroactive_priority_queue import PartiallyRetroactivePriorityQueue
 
 if __name__ == '__main__':
@@ -32,24 +32,26 @@ if __name__ == '__main__':
 
     print("PARTIALLY RETROACTIVE STACK:")
     prs = PartiallyRetroactiveStack()
-    prs.insert_push(2, 10)
+    prs.insert_push(value=2, time=10)
     print(prs)
-    prs.insert_push(4, 20)
+    prs.insert_push(value=4, time=20)
     print(prs)
-    prs.insert_push(6, 30)
+    prs.insert_push(value=6, time=30)
     print(prs)
-    prs.insert_pop(28)
+    prs.insert_pop(time=28)
     print(prs)
-    prs.insert_push(8, 15)
+    prs.insert_push(value=8, time=15)
     print(prs)
-    prs.insert_pop(16)
+    prs.insert_pop(time=16)
     print(prs)
-    prs.delete_operation(30)
+    prs.delete_operation(time=16)
     print(prs)
-    prs.delete_operation(28)
+    prs.delete_operation(time=28)
     print(prs)
-    pop_operation = prs.insert_pop()
-    print("Popped value: " + str(pop_operation.node))
+    prs.delete_operation(time=30)
+    print(prs)
+    pop_operation = prs.get_top()
+    print("Top value: " + str(pop_operation))
     print(prs)
 
     print("------------------------------------------------------------------------------")

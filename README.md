@@ -83,15 +83,18 @@ Stack = [6, 8, 2] (Top=6)
 > prs.insert_pop(time=16)
 Stack = [6, 2] (Top=6)
 
+> prs.delete_operation(time=16)
+Stack = [6, 8, 2] (Top=6)
+
 > prs.delete_operation(time=30)
-Stack = [2] (Top=2)
+Stack = [6, 8, 4, 2] (Top=6)
 
 > prs.delete_operation(time=28)
-Stack = [4, 2] (Top=4)
+Stack = [8, 4, 2] (Top=8)
 
-> pop_operation = prs.insert_pop()
-Popped value: 4
-Stack = [2] (Top=2)
+> top_operation = prs.get_top()
+Top value: 8
+Stack = [8, 4, 2] (Top=8)
 ```
 
 ### 3. Partially Retroactive Priority Queue
@@ -221,6 +224,8 @@ U fajlu *dijkstra.py* dat je primjer primjene parcijalno retroaktivnog reda sa p
 - [Retroactive Data Structures, Erik D. Demaine, John Ianoco, Stefan Langerman](https://erikdemaine.org/papers/Retroactive_TALG/paper.pdf)
 
 - [Fully Retroactive Priority Queues, Erik D. Demaine](https://adamyedidia.files.wordpress.com/2014/11/revised_paper.pdf)
+
+- [Non-oblivious Retroactive Data Structures, Unut A. Acar, Guy E. Blelloch, Kanat Tangwongsan](http://ra.adm.cs.cmu.edu/anon/2007/CMU-CS-07-169.pdf)
 
 - https://github.com/6851-2021/retroactive-priority-queue
 

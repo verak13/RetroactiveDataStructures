@@ -1,4 +1,4 @@
-from retroactive_data_structures.simple_retroactive_data_structures.base import BasePartiallyRetroactive, BaseNode, \
+from retroactive_data_structures.partially_retroactive_queue_and_stack.base import BasePartiallyRetroactive, BaseNode, \
     BaseOperation
 
 
@@ -55,7 +55,6 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         """
         Inserts a new push operation with the given value and time into the queue.
         Find operation after passed time value and add push operation before it. If there is no operation after passed time value, add push operation at the end.
-
         """
 
         if time is None:
@@ -136,19 +135,44 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         operation = self._find_operation_binary_search(time)
         node, is_push = operation.node, operation.is_push
         if is_push:
-            node.is_popped = True
-            if node.prev is not None:
-                node.prev.next = node.next
-            if node.next is not None:
-                node.next.prev = node.prev
+            if node.is_popped:
+                if node.prev is None:
+                    raise ValueError
+                node_to_pop = node.prev
+                while node_to_pop.is_popped:
+                    if node_to_pop.prev is None:
+                        raise ValueError
+                    node_to_pop = node_to_pop.prev
+                node_after = node.next
+                while node_after is not None and node_after.is_popped:
+                    node_after = node_after.next
+                node_to_pop.is_popped = True
+                if node_to_pop.prev is not None:
+                    node_to_pop.prev.next = node_after
+                if node_after is not None:
+                    node_after.prev = node_to_pop.prev
             else:
-                self.top = node.prev
+                node.is_popped = True
+                if node.prev is not None:
+                    node.prev.next = node.next
+                if node.next is not None:
+                    node.next.prev = node.prev
+                else:
+                    self.top = node.prev
         else:
             node.is_popped = False
             if node.next is not None:
-                node.next.prev = node
+                next_node = node.next
+                while next_node.prev != node.prev:
+                    next_node = next_node.prev
+                next_node.prev = node
+                node.next = next_node
             if node.prev is not None:
-                node.prev.next = node
+                prev_node = node.prev
+                while prev_node.next != node.next:
+                    prev_node = prev_node.next
+                prev_node.next = node
+                node.prev = prev_node
             if node.next is not None and node.next.is_popped:
                 self.top = node
         self.operations.remove(operation)
@@ -157,7 +181,7 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
     def __iter__(self):
         node = self.top
         while node is not None:
-            yield node.value
+            yield node
             node = node.prev
 
     def __str__(self):
@@ -180,10 +204,12 @@ if __name__ == '__main__':
     print(prs)
     prs.insert_pop(time=16)
     print(prs)
-    prs.delete_operation(time=30)
+    prs.delete_operation(time=16)
     print(prs)
     prs.delete_operation(time=28)
     print(prs)
-    pop_operation = prs.insert_pop()
-    print("Popped value: " + str(pop_operation.node))
+    prs.delete_operation(time=30)
+    print(prs)
+    pop_operation = prs.get_top()
+    print("Top value: " + str(pop_operation))
     print(prs)
