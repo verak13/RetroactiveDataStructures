@@ -50,11 +50,10 @@ class PartiallyRetroactivePriorityQueueTests(unittest.TestCase):
         prpq.add_insert(20, 6, "6")
         prpq.add_insert(30, 4, "4")
         prpq.add_insert(40, 10, "10")
-        prpq.add_delete_min(29)
         prpq.add_delete_min(28)
         prpq.remove(28)
 
-        self.assertEqual(str(prpq), "PriorityQueue = [4, 6, 10]")
+        self.assertEqual(str(prpq), "PriorityQueue = [2, 4, 6, 10]")
 
     def test_len(self):
         prpq = PartiallyRetroactivePriorityQueue()

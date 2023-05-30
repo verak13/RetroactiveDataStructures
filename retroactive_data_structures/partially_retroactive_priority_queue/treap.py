@@ -201,7 +201,7 @@ class Treap:
             return node
         if key < node.key:
             node.left = self._insert(node.left, key, value)
-            if node.left.priority < node.priority:
+            if node.left.priority > node.priority:
                 node = node.right_rotate()
         elif key > node.key:
             node.right = self._insert(node.right, key, value)
