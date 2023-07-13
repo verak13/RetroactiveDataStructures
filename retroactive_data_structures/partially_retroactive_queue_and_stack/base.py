@@ -25,6 +25,41 @@ class BaseOperation():
             return self.time == other.time
         return NotImplemented
 
+    def __lt__(self, other):
+        if isinstance(other, int):
+            return self.time < other
+        elif isinstance(other, BaseOperation):
+            return self.time < other.time
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, int):
+            return self.time <= other
+        elif isinstance(other, BaseOperation):
+            return self.time <= other.time
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, int):
+            return self.time != other
+        elif isinstance(other, BaseOperation):
+            return self.time != other.time
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, int):
+            return self.time > other
+        elif isinstance(other, BaseOperation):
+            return self.time > other.time
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, int):
+            return self.time >= other
+        elif isinstance(other, BaseOperation):
+            return self.time >= other.time
+        return NotImplemented
+
 
 class BasePartiallyRetroactive():
     def __init__(self):
@@ -36,7 +71,11 @@ class BasePartiallyRetroactive():
         Find maximum time value. When no time is passed to operation, this value will be incremented by 10.
         """
 
-        return max(self.operations, key=lambda x: x.time).time
+        #return max(self.operations, key=lambda x: x.time).time
+        if len(self.operations) > 0:
+            return self.operations[-1].time
+        else:
+            return 0
 
     def is_initialized(self):
         pass
@@ -69,7 +108,7 @@ class BasePartiallyRetroactive():
             mid = (left + right) // 2
             if time == self.operations[mid].time:
                 return self.operations[mid]
-            elif time > self.operations[mid].time:
+            elif time < self.operations[mid].time:
                 right = mid - 1
             else:
                 left = mid + 1
@@ -96,15 +135,15 @@ class BasePartiallyRetroactive():
         Otherwise, None is returned. Note that this implementation assumes that self.operations is already sorted in descending order by time.
         """
 
-        if not self.operations or self.operations[0].time <= time:
+        if not self.operations or self.operations[-1].time <= time:
             return None
         left = 0
         right = len(self.operations) - 1
         while left <= right:
             mid = (left + right) // 2
-            if time < self.operations[mid].time:
-                if mid == 0 or time >= self.operations[mid + 1].time:
-                    return self.operations[mid]
+            if time > self.operations[mid].time:
+                if mid == len(self.operations) - 1 or time <= self.operations[mid + 1].time:
+                    return self.operations[mid + 1]
                 else:
                     left = mid + 1
             else:

@@ -36,11 +36,9 @@ class TreapNode:
         second_node = first_node.right
         first_node.right = second_node.left
         second_node.left = first_node
-        first_node = second_node
-        second_node = first_node.left
         first_node.update_aggregate_value()
         second_node.update_aggregate_value()
-        return first_node
+        return second_node
 
     def right_rotate(self):
 
@@ -55,11 +53,9 @@ class TreapNode:
         second_node = first_node.left
         first_node.left = second_node.right
         second_node.right = first_node
-        first_node = second_node
-        second_node = first_node.right
         first_node.update_aggregate_value()
         second_node.update_aggregate_value()
-        return first_node
+        return second_node
 
     def split(self, key, eq_left=False):
 
@@ -127,6 +123,7 @@ class TreapNode:
             else:
                 result = self.aggregate_func(result, node.aggregate_value)
         self.aggregate_value = result
+
 
     def __iter__(self):
 
@@ -205,7 +202,7 @@ class Treap:
                 node = node.right_rotate()
         elif key > node.key:
             node.right = self._insert(node.right, key, value)
-            if node.right.priority < node.priority:
+            if node.right.priority > node.priority:
                 node = node.left_rotate()
         else:
             node.value = value

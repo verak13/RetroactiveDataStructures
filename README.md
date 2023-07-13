@@ -8,7 +8,7 @@ Implementirane su tri *partially retroactive* strukture podataka:
 
 ### 1. Partially Retroactive Queue
 
-Sadrži listu uvezanih čvorova (*doubly linked list*), pri čemu se čuvaju i podaci o izvršenim operacijama i trenutku u kojem su izvršene. Dodavanje operacija se izvršava u vremenu O(log(n)), jer je potrebno izvršiti binarnu pretragu nad listom operacija da bi se našlo odgovarajuće mjesto za novu operaciju.
+Sadrži listu uvezanih čvorova (*doubly linked list*), pri čemu se čuvaju i podaci o izvršenim operacijama i trenutku u kojem su izvršene. Dodavanje operacija se izvršava u vremenu O(n), jer je potrebno izvršiti binarnu pretragu nad listom operacija da bi se našlo odgovarajuće mjesto za novu operaciju i dodati/ukloniti novu operaciju iz liste.
 
 Podržane su sljedeće operacije:
 - `insert_enqueue(value, time)` - dodavanje operacije enqueue u određenom trenutku. Ako se ne proslijedi time, podrazmijeva se sadašnji trenutak.
@@ -54,7 +54,7 @@ Queue = [4, 6] (First=4, Last=6)
 
 ### 2. Partially Retroactive Stack
 
-Sadrži listu uvezanih čvorova (*doubly linked list*), pri čemu se čuvaju i podaci o izvršenim operacijama i trenutku u kojem su izvršene. Dodavanje operacija se izvršava u vremenu O(log(n)), jer je potrebno izvršiti binarnu pretragu nad listom operacija da bi se našlo odgovarajuće mjesto za novu operaciju.
+Sadrži listu uvezanih čvorova (*doubly linked list*), pri čemu se čuvaju i podaci o izvršenim operacijama i trenutku u kojem su izvršene. Dodavanje operacija se izvršava u vremenu O(n), jer je potrebno izvršiti binarnu pretragu nad listom operacija da bi se našlo odgovarajuće mjesto za novu operaciju i dodati/ukloniti novu operaciju iz liste.
 
 Podržane su sljedeće operacije:
 - `insert_push(value, time)` - dodavanje operacije push u određenom trenutku. Ako se ne proslijedi time, podrazmijeva se sadašnji trenutak.
@@ -155,66 +155,46 @@ Min value: (1, '1')
 PriorityQueue = [1, 2, 6, 10]
 
 NOW
-|- Node k:2 v:None p:0.029040787574867943 agg:None
-|  |- Node k:1 v:None p:0.43788759365057206 agg:None
+|- Node k:6 v:6 p:0.9391491627785106 agg:10
+|  |- Node k:1 v:1 p:0.43788759365057206 agg:None
 |  |  |- None
-|  |  |- None
-|  |- Node k:10 v:None p:0.4453871940548014 agg:None
-|  |  |- Node k:6 v:None p:0.9391491627785106 agg:None
+|  |  |- Node k:2 v:2 p:0.029040787574867943 agg:2
 |  |  |  |- None
 |  |  |  |- None
+|  |- Node k:10 v:10 p:0.4453871940548014 agg:10
+|  |  |- None
 |  |  |- None
 
 INSERTS
-|- Node k:10 v:(2, 10) p:0.22169166627303505 agg:(2, 10)
+|- Node k:40 v:(10, 40, '10') p:0.7215400323407826 agg:(4, 30, '4')
+|  |- Node k:15 v:(1, 15, '1') p:0.49581224138185065 agg:(1, 15, '1')
+|  |  |- Node k:10 v:(2, 10, '2') p:0.22169166627303505 agg:(2, 10, '2')
+|  |  |  |- None
+|  |  |  |- None
+|  |  |- Node k:20 v:(6, 20, '6') p:0.38120423768821243 agg:(6, 20, '6')
+|  |  |  |- None
+|  |  |  |- None
 |  |- None
-|  |- Node k:20 v:(6, 20) p:0.38120423768821243 agg:(4, 30)
-|  |  |- Node k:15 v:(1, 15) p:0.49581224138185065 agg:(1, 15)
-|  |  |  |- None
-|  |  |  |- None
-|  |  |- Node k:40 v:(10, 40) p:0.7215400323407826 agg:(10, 40)
-|  |  |  |- None
-|  |  |  |- None
 
 DELETED
-|- Node k:16 v:(-1, 16) p:0.21659939713061338 agg:(-1, 16)
+|- Node k:16 v:(-1, 16, '-1') p:0.21659939713061338 agg:(1, 15, '1')
 |  |- None
 |  |- None
 
 BRIDGES
-|- Node k:40 v:Ag(sum:0 min_key:40 max_key:40)  p:0.0021060533511106927 agg:Ag(sum:1 min_key:10 max_key:40) 
-|  |- Node k:29 v:Ag(sum:-1 min_key:29 max_key:29)  p:0.22876222127045265 agg:Ag(sum:1 min_key:10 max_key:29) 
-|  |  |- Node k:16 v:Ag(sum:1 min_key:16 max_key:16)  p:0.4221165755827173 agg:Ag(sum:2 min_key:10 max_key:28) 
-|  |  |  |- Node k:15 v:Ag(sum:0 min_key:15 max_key:15)  p:0.5414124727934966 agg:Ag(sum:2 min_key:10 max_key:15) 
-|  |  |  |  |- Node k:10 v:Ag(sum:0 min_key:10 max_key:10)  p:0.8474337369372327 agg:Ag(sum:1 min_key:10 max_key:10) 
-|  |  |  |  |  |- None
-|  |  |  |  |  |- None
-|  |  |  |  |- None
-|  |  |  |- Node k:20 v:Ag(sum:0 min_key:20 max_key:20)  p:0.4494910647887381 agg:Ag(sum:-1 min_key:20 max_key:28) 
-|  |  |  |  |- None
-|  |  |  |  |- None
-|  |  |- None
+|- Node k:10 v:Ag(sum:0 min_key:10 max_key:10)  p:0.8474337369372327 agg:Ag(sum:0 min_key:10 max_key:40) 
 |  |- None
-```
-
-### Primjena
-U fajlu *dijkstra.py* dat je primjer primjene parcijalno retroaktivnog reda sa prioritetom u *dijkstra* algoritmu za traženje najkraćih rastojanja od određeng čvora u grafu.
-
-```python
-    > prpq = PartiallyRetroactivePriorityQueue()
-
-    > example_graph = {
-        'E': {'F': 20, 'D': 50, 'A': 10},
-        'F': {'E': 20, 'A': 20, 'D': 30},
-        'D': {'F': 30, 'E': 50, 'A': 30, 'B': 10, 'C': 50},
-        'A': {'E': 10, 'F': 20, 'D': 30, 'B': 10},
-        'B': {'A': 10, 'D': 10, 'C': 10},
-        'C': {'D': 50, 'B': 10},
-    }
-
-    > distances = calculate_distances_prpq(prpq, example_graph, 'A')
-    > print(distances)
-    {'E': 10, 'F': 20, 'D': 20, 'A': 0, 'B': 10, 'C': 20}
+|  |- Node k:15 v:Ag(sum:0 min_key:15 max_key:15)  p:0.5414124727934966 agg:Ag(sum:0 min_key:15 max_key:40) 
+|  |  |- None
+|  |  |- Node k:20 v:Ag(sum:0 min_key:20 max_key:20)  p:0.4494910647887381 agg:Ag(sum:-1 min_key:16 max_key:40) 
+|  |  |  |- Node k:16 v:Ag(sum:1 min_key:16 max_key:16)  p:0.4221165755827173 agg:Ag(sum:1 min_key:16 max_key:16) 
+|  |  |  |  |- None
+|  |  |  |  |- None
+|  |  |  |- Node k:40 v:Ag(sum:0 min_key:40 max_key:40)  p:0.0021060533511106927 agg:Ag(sum:-1 min_key:29 max_key:40) 
+|  |  |  |  |- Node k:29 v:Ag(sum:-1 min_key:29 max_key:29)  p:0.22876222127045265 agg:Ag(sum:-1 min_key:29 max_key:29) 
+|  |  |  |  |  |- None
+|  |  |  |  |  |- None
+|  |  |  |  |- None
 ```
 
 ### Literatura
@@ -223,9 +203,11 @@ U fajlu *dijkstra.py* dat je primjer primjene parcijalno retroaktivnog reda sa p
 
 - [Retroactive Data Structures, Erik D. Demaine, John Ianoco, Stefan Langerman](https://erikdemaine.org/papers/Retroactive_TALG/paper.pdf)
 
-- [Fully Retroactive Priority Queues, Erik D. Demaine](https://adamyedidia.files.wordpress.com/2014/11/revised_paper.pdf)
+- [Polylogarithmic Fully Retroactive Priority Queues via Hierarchical Checkpointing, E. D. Demaine, T. Kaler, Q. Liu, A. Sidford, A. Yedi](http://supertech.csail.mit.edu/papers/DemaineKaLiSi15.pdf)
 
-- [Non-oblivious Retroactive Data Structures, Unut A. Acar, Guy E. Blelloch, Kanat Tangwongsan](http://ra.adm.cs.cmu.edu/anon/2007/CMU-CS-07-169.pdf)
+- [Fully Retroactive Priority Queues using Persistent Binary Search Trees, J. W. de Andrade Junior, R. Duarte Seabra](https://thescipub.com/pdf/jcssp.2020.906.915.pdf)
 
 - https://github.com/6851-2021/retroactive-priority-queue
+
+- https://github.com/6851-2021/retroactive-pq
 

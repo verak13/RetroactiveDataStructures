@@ -1,3 +1,4 @@
+import bisect
 from retroactive_data_structures.partially_retroactive_queue_and_stack.base import BasePartiallyRetroactive, BaseNode, \
     BaseOperation
 
@@ -33,17 +34,17 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         Note that this implementation assumes that self.operations is already sorted in descending order by time.
         """
 
-        if not self.operations or self.operations[0].time <= time:
+        if not self.operations or self.operations[-1].time <= time:
             return None
         left = 0
         right = len(self.operations) - 1
         while left <= right:
             mid = (left + right) // 2
-            if time < self.operations[mid].time:
-                if mid == 0 or time >= self.operations[mid + 1].time:
-                    while self.operations[mid].node.is_popped:
-                        mid -= 1
-                    return self.operations[mid]
+            if time > self.operations[mid].time:
+                if mid == len(self.operations) - 1 or time <= self.operations[mid + 1].time:
+                    while self.operations[mid+1].node.is_popped:
+                        mid += 1
+                    return self.operations[mid+1]
                 else:
                     left = mid + 1
             else:
@@ -60,15 +61,14 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         if time is None:
             time = self.get_max_time() + 10
 
-        if time in [op.time for op in self.operations]:
+        if time in self.operations:
             raise ValueError
 
         if not self.is_initialized():
             node = Node(None, None, value)
             self.top = node
             operation = Operation(time, node, True)
-            self.operations.append(operation)
-            self.operations.sort(key=lambda x: x.time, reverse=True)
+            self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
             return operation
 
         operation_after = self._find_operation_after_binary_search(time)
@@ -84,8 +84,7 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
             node_after.prev = node
 
         operation = Operation(time, node, True)
-        self.operations.append(operation)
-        self.operations.sort(key=lambda x: x.time, reverse=True)
+        self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
 
     def insert_pop(self, time=None):
 
@@ -97,7 +96,7 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         if time is None:
             time = self.get_max_time() + 10
 
-        if time in [op.time for op in self.operations]:
+        if time in self.operations:
             raise ValueError
 
         if not self.is_initialized():
@@ -117,8 +116,7 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
             node = node_to_pop
         node.is_popped = True
         operation = Operation(time, node, False)
-        self.operations.append(operation)
-        self.operations.sort(key=lambda x: x.time, reverse=True)
+        self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
         return operation
 
     def delete_operation(self, time):
@@ -129,7 +127,7 @@ class PartiallyRetroactiveStack(BasePartiallyRetroactive):
         if operation type is pop, put back popped node.
         """
 
-        if time not in [op.time for op in self.operations]:
+        if time not in self.operations:
             raise ValueError
 
         operation = self._find_operation_binary_search(time)

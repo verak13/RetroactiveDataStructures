@@ -1,3 +1,4 @@
+import bisect
 from retroactive_data_structures.partially_retroactive_queue_and_stack.base import BaseNode, BaseOperation, \
     BasePartiallyRetroactive
 
@@ -50,8 +51,7 @@ class PartiallyRetroactiveQueue(BasePartiallyRetroactive):
             self.first = node
             node.is_before_first = True
             operation = Operation(time, node, True)
-            self.operations.append(operation)
-            self.operations.sort(key=lambda x: x.time, reverse=True)
+            self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
             return operation
 
         operation_after = self._find_operation_after_binary_search(time)
@@ -69,9 +69,9 @@ class PartiallyRetroactiveQueue(BasePartiallyRetroactive):
                 if self.first is not None:
                     self.first.is_before_first = False
                     self.first = self.first.prev
+                    self.first.is_before_first = True
         operation = Operation(time, node, True)
-        self.operations.append(operation)
-        self.operations.sort(key=lambda x: x.time, reverse=True)
+        self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
         return operation
 
     def insert_dequeue(self, time=None):
@@ -96,8 +96,7 @@ class PartiallyRetroactiveQueue(BasePartiallyRetroactive):
         else:
             self.last = None
         operation = Operation(time, node_to_dequeue, False)
-        self.operations.append(operation)
-        self.operations.sort(key=lambda x: x.time, reverse=True)
+        self.operations.insert(bisect.bisect_left(self.operations, operation), operation)
         return operation
 
     def delete_operation(self, time):
@@ -127,12 +126,13 @@ class PartiallyRetroactiveQueue(BasePartiallyRetroactive):
             self.first.is_before_first = False
             node.next = self.first
             self.first = node
+        self.operations.remove(operation)
         return None
 
     def __iter__(self):
         node = self.first
         while node is not None:
-            yield node.value
+            yield node
             if node == self.last:
                 break
             node = node.next

@@ -33,7 +33,7 @@ class PartiallyRetroactivePriorityQueue():
     def _min_for_time(self, time):
 
         """
-        Returns the value and time of the minimum element in the priority queue that was inserted before or at the given time, or None if the priority queue is empty or all elements were inserted after the given time.
+        Returns the value and time of the minimum element in the priority queue that was inserted after or at the given time, or None if the priority queue is empty or all elements were inserted after the given time.
         """
 
         bridge = self._bridges.zero_prefix_after(time)
